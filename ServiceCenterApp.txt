@@ -1,0 +1,187 @@
+import java.util.*;
+
+class ServiceCenterApp {
+    static Scanner sc = new Scanner(System.in);
+    static HashMap<String, User> users = new HashMap<>();
+    static HashMap<String, String> employeeContacts = new HashMap<>();
+    static HashMap<String, Integer> services = new HashMap<>();
+
+    static {
+        // Initialize employee contacts and service counts
+        employeeContacts.put("hyderabad", "Arun-9701645345");
+        employeeContacts.put("ghatkesar", "Suresh-9856746786");
+        employeeContacts.put("uppal", "Naresh-9858945656");
+        services.put("hyderabad", 3);
+        services.put("ghatkesar", 5);
+        services.put("uppal", 10);
+    }
+
+    static class User {
+        String password;
+        String role;
+
+        User(String password, String role) {
+            this.password = password;
+            this.role = role;
+        }
+    }
+
+    public static void main(String[] args) {
+        while (true) {
+            System.out.println("1. Registration\n2. Login\n3. Exit");
+            System.out.println("Enter your choice:");
+            int choice = sc.nextInt();
+            sc.nextLine(); // Consume newline
+            switch (choice) {
+                case 1:
+                    registration();
+                    break;
+                case 2:
+                    login();
+                    break;
+                case 3:
+                    System.out.println("Exiting the application.");
+                    return;
+                default:
+                    System.out.println("Please enter a valid choice.");
+            }
+        }
+    }
+
+    public static void registration() {
+        System.out.println("Enter username:");
+        String name = sc.nextLine();
+        System.out.println("Enter password:");
+        String pass = sc.nextLine();
+        System.out.println("Enter your role (admin/customer):");
+        String role = sc.nextLine().toLowerCase();
+
+        if (!isValidUsername(name) || !isValidPassword(pass)) {
+            System.out.println("Invalid username or password. Username should not start with a number or special character, and password should not start with a number or special character.");
+            return;
+        }
+
+        if (!role.equals("admin") && !role.equals("customer")) {
+            System.out.println("Invalid role. Please enter either 'admin' or 'customer'.");
+            return;
+        }
+
+        users.put(name, new User(pass, role));
+        System.out.println("Registration successful!");
+        login();
+    }
+
+    public static boolean isValidUsername(String name) {
+        return Character.isLetter(name.charAt(0));
+    }
+
+    public static boolean isValidPassword(String pass) {
+        return Character.isLetter(pass.charAt(0));
+    }
+
+    public static void login() {
+        System.out.println("Enter username:");
+        String name = sc.nextLine();
+        System.out.println("Enter password:");
+        String pass = sc.nextLine();
+        System.out.println("Enter your role:");
+        String role = sc.nextLine().toLowerCase();
+
+        User user = users.get(name);
+
+        if (user != null && user.password.equals(pass) && user.role.equals(role)) {
+            switch (role) {
+                case "admin":
+                    admin();
+                    break;
+                case "customer":
+                    customer();
+                    break;
+                default:
+                    System.out.println("Invalid role entered.");
+            }
+        } else {
+            System.out.println("Invalid username, password, or role.");
+        }
+    }
+
+    public static void customer() {
+        System.out.println("Is there any service request you want? (yes/no)");
+        String request = sc.nextLine();
+
+        if (request.equalsIgnoreCase("yes")) {
+            System.out.println("Enter your location:");
+            String location = sc.nextLine();
+            employee(location);
+        } else {
+            System.out.println("No service request made.");
+        }
+    }
+
+    public static void employee(String location) {
+        String contact = employeeContacts.get(location);
+
+        if (contact != null) {
+            System.out.println("Please contact: " + contact);
+            services.put(location, services.get(location) + 1);
+            admin();
+        } else {
+            System.out.println("Service not available at this location.");
+        }
+    }
+
+    public static void admin() {
+        System.out.println("Services allocated to each location:");
+        services.forEach((location, count) -> {
+            System.out.println(location + ": " + count);
+            if (count > 6) {
+                System.out.println("Consider assigning more employees to " + location);
+            } else {
+                System.out.println("Doing good at " + location);
+            }
+        });
+        salesAnalysis();
+    }
+
+    public static void salesAnalysis() {
+        System.out.println("Employee performance analysis:");
+        services.forEach((location, count) -> {
+            if (count > 5) {
+                System.out.println("Admin should assign more employees to " + location);
+            }
+        });
+        customerReview();
+    }
+
+    public static void customerReview() {
+        System.out.println("Enter your rating (1-5):");
+        System.out.println("1. Excellent\n2. Very good\n3. Good\n4. Average\n5. Bad");
+        int rating = sc.nextInt();
+        sc.nextLine(); // Consume newline
+
+        switch (rating) {
+            case 1:
+                System.out.println("Excellent");
+                break;
+            case 2:
+                System.out.println("Very good");
+                break;
+            case 3:
+                System.out.println("Good");
+                break;
+            case 4:
+                System.out.println("Average. The current employee can be improved.");
+                break;
+            case 5:
+                System.out.println("Bad. The current employee needs to be trained.");
+                break;
+            default:
+                System.out.println("Invalid rating.");
+        }
+        monthlyFeedback();
+    }
+
+    public static void monthlyFeedback() {
+        System.out.println("You can enter monthly feedback through email: batch12@gmail.com");
+    }
+}
